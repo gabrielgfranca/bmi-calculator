@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'reusable_card.dart';
+import 'blueprints.dart';
 import 'icon_content.dart';
 import 'constants.dart';
+import 'result_page.dart';
+import 'brain.dart';
 
 enum Gender { male, female }
 
@@ -15,8 +17,8 @@ class InputPage extends StatefulWidget {
 
 class _InputPageState extends State<InputPage> {
   Gender? selectedGender;
-  int height = 180;
-  int weight = 80;
+  int lHeight = 180;
+  int lWeight = 80;
   int age = 21;
 
   @override
@@ -83,7 +85,7 @@ class _InputPageState extends State<InputPage> {
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           textBaseline: TextBaseline.alphabetic,
                           children: [
-                            Text(height.toString(), style: kNumberTextStyle),
+                            Text(lHeight.toString(), style: kNumberTextStyle),
                             Text('cm', style: kLabelTextStyle),
                           ],
                         ),
@@ -101,12 +103,12 @@ class _InputPageState extends State<InputPage> {
                             overlayColor: kOverlayColor,
                           ),
                           child: Slider(
-                            value: height.toDouble(),
+                            value: lHeight.toDouble(),
                             min: 120.0,
                             max: 220.0,
                             onChanged: (double newValue) {
                               setState(() {
-                                height = newValue.round();
+                                lHeight = newValue.round();
                               });
                             },
                           ),
@@ -128,7 +130,7 @@ class _InputPageState extends State<InputPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('WEIGHT', style: kLabelTextStyle),
-                        Text(weight.toString(), style: kNumberTextStyle),
+                        Text(lWeight.toString(), style: kNumberTextStyle),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -136,7 +138,7 @@ class _InputPageState extends State<InputPage> {
                               icon: FontAwesomeIcons.minus,
                               onPressed: () {
                                 setState(() {
-                                  weight--;
+                                  lWeight--;
                                 });
                               },
                             ),
@@ -145,7 +147,7 @@ class _InputPageState extends State<InputPage> {
                               icon: FontAwesomeIcons.plus,
                               onPressed: () {
                                 setState(() {
-                                  weight++;
+                                  lWeight++;
                                 });
                               },
                             ),
@@ -192,36 +194,27 @@ class _InputPageState extends State<InputPage> {
               ],
             ),
           ),
-          Container(
-            color: kBottomContainerColor,
-            margin: EdgeInsets.only(top: 10.0),
-            width: double.infinity,
-            height: kBottomContainerHeight,
+          CalculateButton(
+            buttonText: 'CALCULATE',
+            onPressed: () {
+              CalculatorBrain calc = CalculatorBrain(
+                height: lHeight,
+                weight: lWeight,
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResultPage(
+                    bmiResult: calc.calculateBMI(),
+                    resultText: calc.getResult(),
+                    interpretation: calc.getInterpretation(),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
-    );
-  }
-}
-
-class RoundIconButton extends StatelessWidget {
-  const RoundIconButton({
-    required this.onPressed,
-    required this.icon,
-    super.key,
-  });
-  final IconData icon;
-  final GestureTapCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return RawMaterialButton(
-      onPressed: onPressed,
-      shape: CircleBorder(),
-      fillColor: Color(0xff4c4f5e),
-      constraints: BoxConstraints.tightFor(width: 56.0, height: 56.0),
-      elevation: 6.0,
-      child: Icon(icon),
     );
   }
 }
